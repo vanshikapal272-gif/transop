@@ -177,6 +177,15 @@ code { font-family: 'JetBrains Mono', monospace; font-size: var(--fs-xs); backgr
 }
 .btn-danger:hover { box-shadow: 0 4px 20px rgba(239,68,68,0.4); transform: translateY(-1px); }
 
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
 .btn-sm { padding: 6px 14px; font-size: var(--fs-xs); border-radius: var(--radius-sm); }
 .btn-lg { padding: 14px 28px; font-size: var(--fs-md); border-radius: var(--radius-lg); }
 .btn-icon { padding: 8px; border-radius: var(--radius-md); }
@@ -282,6 +291,60 @@ textarea.form-input { min-height: 80px; resize: vertical; }
 /* ════════════════════════════════════════════════════════════
    TABLES
    ════════════════════════════════════════════════════════════ */
+.data-table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-4) var(--sp-4);
+  border-bottom: 1px solid var(--border-light);
+}
+.data-table-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.data-table-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.data-table-search input {
+  padding: 8px 14px 8px 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  font-size: var(--fs-sm);
+  color: var(--text-primary);
+  width: 200px;
+  outline: none;
+  transition: all 0.25s var(--ease);
+}
+.data-table-search input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  width: 260px;
+}
+.data-table-search svg {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.data-table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-3) var(--sp-4);
+  border-top: 1px solid var(--border-light);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+.data-table-pagination-btns {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
 .data-table-wrapper {
   overflow-x: auto;
   border-radius: var(--radius-xl);
@@ -320,6 +383,12 @@ textarea.form-input { min-height: 80px; resize: vertical; }
 .data-table tbody tr:hover { background: var(--surface-active); }
 .data-table tbody tr:hover td { color: var(--text-primary); }
 .data-table tbody tr:last-child td { border-bottom: none; }
+.data-table-empty {
+  padding: var(--sp-8) var(--sp-4);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
 
 /* ════════════════════════════════════════════════════════════
    BADGES — Pill-shaped

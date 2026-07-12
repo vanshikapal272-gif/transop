@@ -18,8 +18,16 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      await login({ email: form.email, password: form.password });
-      navigate('/app/dashboard');
+      const userData = await login({ email: form.email, password: form.password });
+      
+      const roleAccess = {
+        'Fleet Manager': '/app/fleet',
+        'Dispatcher': '/app/dashboard',
+        'Safety Officer': '/app/drivers',
+        'Financial Analyst': '/app/fuel-expenses'
+      };
+      
+      navigate(roleAccess[userData.role] || '/app/dashboard');
     } catch (err) {
       setError(err.response?.data?.error || 'Invalid credentials. Please try again.');
     } finally {

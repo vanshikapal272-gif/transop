@@ -14,9 +14,21 @@ const navItems = [
   { path: '/app/fuel-expenses', label: 'Fuel & Expenses', icon: Fuel },
   { path: '/app/analytics', label: 'Analytics', icon: BarChart3 },
 ];
+const roleAccess = {
+  'Fleet Manager': ['/app/fleet', '/app/maintenance'],
+  'Dispatcher': ['/app/dashboard', '/app/trips'],
+  'Safety Officer': ['/app/drivers'], // Drivers & Compliance
+  'Financial Analyst': ['/app/fuel-expenses', '/app/analytics']
+};
 
 export default function Sidebar({ collapsed, onToggle }) {
   const { user } = useAuth();
+
+  const filteredNavItems = navItems.filter(item => {
+    if (!user || !user.role) return true;
+    const allowed = roleAccess[user.role] || [];
+    return allowed.includes(item.path);
+  });
 
   return (
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
@@ -32,7 +44,7 @@ export default function Sidebar({ collapsed, onToggle }) {
 
       {/* Navigation */}
       <nav className="sidebar-nav">
-        {navItems.map(item => (
+        {filteredNavItems.map(item => (
           <NavLink
             key={item.path}
             to={item.path}

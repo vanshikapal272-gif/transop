@@ -17,13 +17,26 @@ function ProtectedRoute({ children }) {
   return isAuthenticated ? children : <Navigate to="/login" />;
 }
 
+function RoleBasedRedirect() {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" />;
+  
+  const roleAccess = {
+    'Fleet Manager': '/app/fleet',
+    'Dispatcher': '/app/dashboard',
+    'Safety Officer': '/app/drivers',
+    'Financial Analyst': '/app/fuel-expenses'
+  };
+  return <Navigate to={roleAccess[user.role] || '/app/dashboard'} />;
+}
+
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/app" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-        <Route index element={<Navigate to="/app/dashboard" />} />
+        <Route index element={<RoleBasedRedirect />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="fleet" element={<Fleet />} />
         <Route path="drivers" element={<Drivers />} />
