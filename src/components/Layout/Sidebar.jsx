@@ -15,10 +15,10 @@ const navItems = [
   { path: '/app/analytics', label: 'Analytics', icon: BarChart3 },
 ];
 const roleAccess = {
-  'Fleet Manager': ['/app/fleet', '/app/maintenance'],
+  'Fleet Manager': ['/app/dashboard', '/app/fleet', '/app/maintenance'],
   'Dispatcher': ['/app/dashboard', '/app/trips'],
-  'Safety Officer': ['/app/drivers'], // Drivers & Compliance
-  'Financial Analyst': ['/app/fuel-expenses', '/app/analytics']
+  'Safety Officer': ['/app/dashboard', '/app/drivers'], // Drivers & Compliance
+  'Financial Analyst': ['/app/dashboard', '/app/fuel-expenses', '/app/analytics']
 };
 
 export default function Sidebar({ collapsed, onToggle }) {

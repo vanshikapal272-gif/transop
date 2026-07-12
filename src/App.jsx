@@ -21,13 +21,7 @@ function RoleBasedRedirect() {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" />;
   
-  const roleAccess = {
-    'Fleet Manager': '/app/fleet',
-    'Dispatcher': '/app/dashboard',
-    'Safety Officer': '/app/drivers',
-    'Financial Analyst': '/app/fuel-expenses'
-  };
-  return <Navigate to={roleAccess[user.role] || '/app/dashboard'} />;
+  return <Navigate to="/app/dashboard" />;
 }
 
 export default function App() {

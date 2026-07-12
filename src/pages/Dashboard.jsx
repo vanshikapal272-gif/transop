@@ -112,6 +112,11 @@ export default function Dashboard() {
 
   const today = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
+  const isFleetManager = user?.role === 'Fleet Manager';
+  const isDispatcher = user?.role === 'Dispatcher';
+  const isSafetyOfficer = user?.role === 'Safety Officer';
+  const isFinancialAnalyst = user?.role === 'Financial Analyst';
+
   return (
     <div>
       {/* Greeting */}
@@ -122,149 +127,171 @@ export default function Dashboard() {
 
       {/* Stat Cards */}
       <div className="stats-grid">
-        <div className="stat-card stat-card--1">
-          <div className="stat-icon"><Truck size={20} /></div>
-          <span className="stat-value">{vehicles.length}</span>
-          <span className="stat-label">Total Vehicles</span>
-          <div className="stat-trend"><ArrowUpRight size={12} /> {available} available</div>
-        </div>
-        <div className="stat-card stat-card--2">
-          <div className="stat-icon"><Route size={20} /></div>
-          <span className="stat-value">{activeTrips}</span>
-          <span className="stat-label">Active Trips</span>
-          <div className="stat-trend"><ArrowUpRight size={12} /> {trips.length} total</div>
-        </div>
-        <div className="stat-card stat-card--3">
-          <div className="stat-icon"><Users size={20} /></div>
-          <span className="stat-value">{availDrivers}</span>
-          <span className="stat-label">Available Drivers</span>
-          <div className="stat-trend"><ArrowUpRight size={12} /> {drivers.length} total</div>
-        </div>
-        <div className="stat-card stat-card--4">
-          <div className="stat-icon"><TrendingUp size={20} /></div>
-          <span className="stat-value">₹{(revenue / 100000).toFixed(1)}L</span>
-          <span className="stat-label">Monthly Revenue</span>
-          <div className="stat-trend"><ArrowUpRight size={12} /> +18% vs last</div>
-        </div>
+        {(isFleetManager || isDispatcher || isSafetyOfficer) && (
+          <div className="stat-card stat-card--1">
+            <div className="stat-icon"><Truck size={20} /></div>
+            <span className="stat-value">{vehicles.length}</span>
+            <span className="stat-label">Total Vehicles</span>
+            <div className="stat-trend"><ArrowUpRight size={12} /> {available} available</div>
+          </div>
+        )}
+        {(isFleetManager || isDispatcher) && (
+          <div className="stat-card stat-card--2">
+            <div className="stat-icon"><Route size={20} /></div>
+            <span className="stat-value">{activeTrips}</span>
+            <span className="stat-label">Active Trips</span>
+            <div className="stat-trend"><ArrowUpRight size={12} /> {trips.length} total</div>
+          </div>
+        )}
+        {(isFleetManager || isDispatcher || isSafetyOfficer) && (
+          <div className="stat-card stat-card--3">
+            <div className="stat-icon"><Users size={20} /></div>
+            <span className="stat-value">{availDrivers}</span>
+            <span className="stat-label">Available Drivers</span>
+            <div className="stat-trend"><ArrowUpRight size={12} /> {drivers.length} total</div>
+          </div>
+        )}
+        {(isFleetManager || isFinancialAnalyst) && (
+          <div className="stat-card stat-card--4">
+            <div className="stat-icon"><TrendingUp size={20} /></div>
+            <span className="stat-value">₹{(revenue / 100000).toFixed(1)}L</span>
+            <span className="stat-label">Monthly Revenue</span>
+            <div className="stat-trend"><ArrowUpRight size={12} /> +18% vs last</div>
+          </div>
+        )}
       </div>
 
       {/* Main Grid */}
       <div className="dashboard-grid">
         {/* Left Column */}
         <div className="flex-col gap-4" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Map */}
-          <div className="card">
-            <div className="card-header">
-              <h3><MapPin size={16} style={{ display: 'inline', marginRight: 8, color: '#f59e0b' }} />Live Fleet Tracking</h3>
-              <span className="badge badge-success">{onTrip} on road</span>
-            </div>
-            <div style={{ height: '400px', borderRadius: '0 0 20px 20px', overflow: 'hidden' }}>
-              <MapContainer center={[22.5, 78.9]} zoom={5} style={{ height: '100%', width: '100%' }} scrollWheelZoom={true}>
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-                  url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-                />
-                {vehicleMarkers.map(v => (
-                  <Marker key={v.id} position={[v.lat, v.lng]} icon={createMarkerIcon(statusColors[v.status] || '#78716c')}>
-                    <Popup>
-                      <div style={{ fontFamily: 'Inter', minWidth: 160 }}>
-                        <strong style={{ fontSize: 14 }}>{v.name}</strong><br />
-                        <span style={{ fontSize: 12, color: '#78716c' }}>{v.registration_number}</span><br />
-                        <span style={{
-                          display: 'inline-block', marginTop: 4, padding: '2px 8px',
-                          borderRadius: 99, fontSize: 11, fontWeight: 600,
-                          background: statusColors[v.status] + '20', color: statusColors[v.status]
-                        }}>{v.status}</span><br />
-                        <span style={{ fontSize: 11, color: '#a8a29e' }}>{v.city} · {v.region}</span>
-                      </div>
-                    </Popup>
-                  </Marker>
-                ))}
-              </MapContainer>
-            </div>
-          </div>
-
-          {/* Recent Trips */}
-          <div className="card">
-            <div className="card-header">
-              <h3>Recent Trips</h3>
-              <button className="btn btn-sm btn-secondary" onClick={() => navigate('/app/trips')}>View All</button>
-            </div>
-            <div className="data-table-wrapper" style={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
-              <table className="data-table">
-                <thead>
-                  <tr><th>Route</th><th>Vehicle</th><th>Driver</th><th>Status</th><th>Date</th></tr>
-                </thead>
-                <tbody>
-                  {recentTrips.map(t => (
-                    <tr key={t.id}>
-                      <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{t.source} → {t.destination}</td>
-                      <td>{t.vehicle_reg || '—'}</td>
-                      <td>{t.driver_name || '—'}</td>
-                      <td>
-                        <span className={`badge badge-${t.status === 'Completed' ? 'success' : t.status === 'Dispatched' ? 'warning' : t.status === 'Cancelled' ? 'danger' : 'secondary'}`}>
-                          {t.status}
-                        </span>
-                      </td>
-                      <td className="text-xs text-muted">{new Date(t.created_at).toLocaleDateString('en-IN')}</td>
-                    </tr>
+          {/* Map (Fleet Manager & Dispatcher) */}
+          {(isFleetManager || isDispatcher) && (
+            <div className="card">
+              <div className="card-header">
+                <h3><MapPin size={16} style={{ display: 'inline', marginRight: 8, color: '#f59e0b' }} />Live Fleet Tracking</h3>
+                <span className="badge badge-success">{onTrip} on road</span>
+              </div>
+              <div style={{ height: '400px', borderRadius: '0 0 20px 20px', overflow: 'hidden' }}>
+                <MapContainer center={[22.5, 78.9]} zoom={5} style={{ height: '100%', width: '100%' }} scrollWheelZoom={true}>
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+                    url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                  />
+                  {vehicleMarkers.map(v => (
+                    <Marker key={v.id} position={[v.lat, v.lng]} icon={createMarkerIcon(statusColors[v.status] || '#78716c')}>
+                      <Popup>
+                        <div style={{ fontFamily: 'Inter', minWidth: 160 }}>
+                          <strong style={{ fontSize: 14 }}>{v.name}</strong><br />
+                          <span style={{ fontSize: 12, color: '#78716c' }}>{v.registration_number}</span><br />
+                          <span style={{
+                            display: 'inline-block', marginTop: 4, padding: '2px 8px',
+                            borderRadius: 99, fontSize: 11, fontWeight: 600,
+                            background: statusColors[v.status] + '20', color: statusColors[v.status]
+                          }}>{v.status}</span><br />
+                          <span style={{ fontSize: 11, color: '#a8a29e' }}>{v.city} · {v.region}</span>
+                        </div>
+                      </Popup>
+                    </Marker>
                   ))}
-                </tbody>
-              </table>
+                </MapContainer>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Recent Trips (Dispatcher & Financial Analyst) */}
+          {(isDispatcher || isFinancialAnalyst) && (
+            <div className="card">
+              <div className="card-header">
+                <h3>Recent Trips</h3>
+                <button className="btn btn-sm btn-secondary" onClick={() => navigate('/app/trips')}>View All</button>
+              </div>
+              <div className="data-table-wrapper" style={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
+                <table className="data-table">
+                  <thead>
+                    <tr><th>Route</th><th>Vehicle</th><th>Driver</th><th>Status</th><th>Date</th></tr>
+                  </thead>
+                  <tbody>
+                    {recentTrips.map(t => (
+                      <tr key={t.id}>
+                        <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{t.source} → {t.destination}</td>
+                        <td>{t.vehicle_reg || '—'}</td>
+                        <td>{t.driver_name || '—'}</td>
+                        <td>
+                          <span className={`badge badge-${t.status === 'Completed' ? 'success' : t.status === 'Dispatched' ? 'warning' : t.status === 'Cancelled' ? 'danger' : 'secondary'}`}>
+                            {t.status}
+                          </span>
+                        </td>
+                        <td className="text-xs text-muted">{new Date(t.created_at).toLocaleDateString('en-IN')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Fleet Status Donut */}
-          <div className="card">
-            <div className="card-header"><h3>Fleet Status</h3></div>
-            <div className="fleet-donut">
-              <svg width="140" height="140" viewBox="0 0 42 42">
-                <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--bg-tertiary)" strokeWidth="4" />
-                {donutSegments.map((s, i) => (
-                  <circle key={i} cx="21" cy="21" r="15.915" fill="none"
-                    stroke={s.color} strokeWidth="4"
-                    strokeDasharray={`${s.pct} ${100 - s.pct}`}
-                    strokeDashoffset={-s.offset + 25}
-                    strokeLinecap="round"
-                  />
-                ))}
-                <text x="21" y="20" textAnchor="middle" fontSize="6" fontWeight="800" fill="var(--text-primary)">{vehicles.length}</text>
-                <text x="21" y="25" textAnchor="middle" fontSize="3" fill="var(--text-muted)">vehicles</text>
-              </svg>
-              <div className="fleet-legend">
-                {segments.map(s => (
-                  <div key={s.label} className="fleet-legend-item">
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <span className="fleet-legend-dot" style={{ background: s.color }} />
-                      <span>{s.label}</span>
+          {/* Fleet Status Donut (Fleet Manager & Safety Officer) */}
+          {(isFleetManager || isSafetyOfficer) && (
+            <div className="card">
+              <div className="card-header"><h3>Fleet Status</h3></div>
+              <div className="fleet-donut">
+                <svg width="140" height="140" viewBox="0 0 42 42">
+                  <circle cx="21" cy="21" r="15.915" fill="none" stroke="var(--bg-tertiary)" strokeWidth="4" />
+                  {donutSegments.map((s, i) => (
+                    <circle key={i} cx="21" cy="21" r="15.915" fill="none"
+                      stroke={s.color} strokeWidth="4"
+                      strokeDasharray={`${s.pct} ${100 - s.pct}`}
+                      strokeDashoffset={-s.offset + 25}
+                      strokeLinecap="round"
+                    />
+                  ))}
+                  <text x="21" y="20" textAnchor="middle" fontSize="6" fontWeight="800" fill="var(--text-primary)">{vehicles.length}</text>
+                  <text x="21" y="25" textAnchor="middle" fontSize="3" fill="var(--text-muted)">vehicles</text>
+                </svg>
+                <div className="fleet-legend">
+                  {segments.map(s => (
+                    <div key={s.label} className="fleet-legend-item">
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <span className="fleet-legend-dot" style={{ background: s.color }} />
+                        <span>{s.label}</span>
+                      </div>
+                      <strong>{s.count}</strong>
                     </div>
-                    <strong>{s.count}</strong>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Quick Actions */}
           <div className="card">
             <div className="card-header"><h3>Quick Actions</h3></div>
             <div className="card-body">
               <div className="quick-actions">
-                <button className="quick-action-btn" onClick={() => navigate('/app/trips')}>
-                  <Plus size={18} /><span>New Trip</span>
-                </button>
-                <button className="quick-action-btn" onClick={() => navigate('/app/fleet')}>
-                  <Truck size={18} /><span>Add Vehicle</span>
-                </button>
-                <button className="quick-action-btn" onClick={() => navigate('/app/drivers')}>
-                  <Users size={18} /><span>Add Driver</span>
-                </button>
-                <button className="quick-action-btn" onClick={() => navigate('/app/analytics')}>
-                  <BarChart3 size={18} /><span>Analytics</span>
-                </button>
+                {(isDispatcher || isFleetManager) && (
+                  <button className="quick-action-btn" onClick={() => navigate('/app/trips')}>
+                    <Plus size={18} /><span>New Trip</span>
+                  </button>
+                )}
+                {isFleetManager && (
+                  <button className="quick-action-btn" onClick={() => navigate('/app/fleet')}>
+                    <Truck size={18} /><span>Add Vehicle</span>
+                  </button>
+                )}
+                {(isSafetyOfficer || isFleetManager) && (
+                  <button className="quick-action-btn" onClick={() => navigate('/app/drivers')}>
+                    <Users size={18} /><span>Add Driver</span>
+                  </button>
+                )}
+                {isFinancialAnalyst && (
+                  <button className="quick-action-btn" onClick={() => navigate('/app/analytics')}>
+                    <BarChart3 size={18} /><span>Analytics</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -277,13 +304,13 @@ export default function Dashboard() {
             </div>
             <div className="card-body">
               {expiringDrivers.length === 0 && <p className="text-sm text-muted">No active alerts</p>}
-              {expiringDrivers.slice(0, 4).map(d => (
+              {(isFleetManager || isSafetyOfficer || isDispatcher) && expiringDrivers.slice(0, 4).map(d => (
                 <div key={d.id} className={`alert-item ${new Date(d.license_expiry) < new Date() ? 'critical' : ''}`}>
                   <strong>{d.name}</strong>
                   License {new Date(d.license_expiry) < new Date() ? 'expired' : 'expiring'} on {new Date(d.license_expiry).toLocaleDateString('en-IN')}
                 </div>
               ))}
-              {vehicles.filter(v => v.status === 'In Shop').map(v => (
+              {(isFleetManager || isDispatcher) && vehicles.filter(v => v.status === 'In Shop').map(v => (
                 <div key={v.id} className="alert-item">
                   <strong>{v.name}</strong>
                   Currently in maintenance ({v.registration_number})
