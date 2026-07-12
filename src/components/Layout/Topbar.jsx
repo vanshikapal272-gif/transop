@@ -1,41 +1,59 @@
+import { useLocation } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
-import { Sun, Moon, Menu } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { Menu, Sun, Moon, Bell, Search, LogOut } from 'lucide-react';
 
-const pageTitles = {
-  '/dashboard': 'Dashboard',
-  '/fleet': 'Fleet Registry',
-  '/drivers': 'Driver Management',
-  '/trips': 'Trip Management',
-  '/maintenance': 'Maintenance',
-  '/fuel-expenses': 'Fuel & Expenses',
-  '/analytics': 'Reports & Analytics',
+const pageNames = {
+  dashboard: 'Dashboard',
+  fleet: 'Fleet Registry',
+  drivers: 'Driver Management',
+  trips: 'Trip Dispatch',
+  maintenance: 'Maintenance',
+  'fuel-expenses': 'Fuel & Expenses',
+  analytics: 'Analytics',
 };
 
-export default function Topbar({ collapsed, onMenuClick }) {
+export default function Topbar({ sidebarCollapsed, onToggleSidebar }) {
   const { theme, toggleTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
-  const title = pageTitles[location.pathname] || 'TransitOps';
+
+  const pathSegment = location.pathname.split('/').filter(Boolean).pop() || 'dashboard';
+  const pageName = pageNames[pathSegment] || 'Dashboard';
 
   return (
-    <header className={`topbar ${collapsed ? 'sidebar-collapsed' : ''}`}>
+    <header className={`topbar ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <div className="topbar-left">
-        <button className="topbar-hamburger" onClick={onMenuClick} style={{ display: 'flex' }}>
-          <Menu size={20} />
+        <button className="topbar-hamburger" onClick={onToggleSidebar}>
+          <Menu size={18} />
         </button>
-        <div>
-          <h1 style={{ fontSize: 'var(--fs-lg)', fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.2 }}>{title}</h1>
+
+        <span className="topbar-page-title">{pageName}</span>
+
+        <div className="topbar-search">
+          <Search size={14} />
+          <input type="text" placeholder="Search anything..." className="form-input" />
         </div>
       </div>
+
       <div className="topbar-right">
-        <button className="topbar-icon-btn" onClick={toggleTheme} title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
-          {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+        <button className="topbar-icon-btn" title="Notifications">
+          <Bell size={18} />
+          <span className="notification-dot" />
         </button>
-        <div className="sidebar-user-avatar" style={{ width: 28, height: 28, fontSize: 11 }}>
-          {user?.name?.charAt(0)}
+
+        <button className="topbar-theme-toggle" onClick={toggleTheme}>
+          {theme === 'light' ? <Moon size={14} /> : <Sun size={14} />}
+          <span>{theme === 'light' ? 'Dark' : 'Light'}</span>
+        </button>
+
+        <div className="topbar-user-avatar" title={user?.name}>
+          {user?.name?.charAt(0) || 'U'}
         </div>
+
+        <button className="topbar-icon-btn" onClick={logout} title="Sign out">
+          <LogOut size={16} />
+        </button>
       </div>
     </header>
   );

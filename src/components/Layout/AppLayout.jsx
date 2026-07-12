@@ -1,5 +1,5 @@
-import { Outlet } from 'react-router-dom';
 import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 
@@ -8,13 +8,13 @@ export default function AppLayout() {
 
   return (
     <div className="app-layout">
-      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} />
-      <div className={`app-main ${collapsed ? 'sidebar-collapsed' : ''}`}>
-        <Topbar collapsed={collapsed} onMenuClick={() => setCollapsed(c => !c)} />
-        <main className="app-content">
+      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
+      <Topbar sidebarCollapsed={collapsed} onToggleSidebar={() => setCollapsed(!collapsed)} />
+      <main className={`app-main ${collapsed ? 'sidebar-collapsed' : ''}`}>
+        <div className="app-content">
           <Outlet />
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

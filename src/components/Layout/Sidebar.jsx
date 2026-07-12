@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
-  LayoutDashboard, Truck, Users, Route, Wrench,
-  Fuel, BarChart3, LogOut
+  LayoutDashboard, Truck, Users, Route, Wrench, Fuel,
+  BarChart3, ChevronLeft, ChevronRight
 } from 'lucide-react';
 
 const navItems = [
@@ -16,19 +16,22 @@ const navItems = [
 ];
 
 export default function Sidebar({ collapsed, onToggle }) {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
-      <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">
-          <Truck size={16} />
+      {/* Brand */}
+      <div className="sidebar-brand">
+        <div className="sidebar-brand-icon">
+          <Truck size={18} />
         </div>
-        {!collapsed && <span className="sidebar-logo-text">Transit<span>Ops</span></span>}
+        <div className="sidebar-brand-text">
+          Transit<span>Ops</span>
+        </div>
       </div>
 
+      {/* Navigation */}
       <nav className="sidebar-nav">
-        <div className="sidebar-section-label">Menu</div>
         {navItems.map(item => (
           <NavLink
             key={item.path}
@@ -37,24 +40,34 @@ export default function Sidebar({ collapsed, onToggle }) {
             title={collapsed ? item.label : undefined}
           >
             <item.icon size={18} />
-            {!collapsed && <span>{item.label}</span>}
+            <span>{item.label}</span>
           </NavLink>
         ))}
       </nav>
 
+      {/* Toggle Button */}
+      <div style={{ padding: '8px 12px' }}>
+        <button
+          onClick={onToggle}
+          className="sidebar-item"
+          style={{ width: '100%', justifyContent: collapsed ? 'center' : 'flex-start' }}
+          title={collapsed ? 'Expand' : 'Collapse'}
+        >
+          {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          {!collapsed && <span>Collapse</span>}
+        </button>
+      </div>
+
+      {/* User Footer */}
       <div className="sidebar-footer">
-        {!collapsed && user && (
-          <div className="sidebar-user">
-            <div className="sidebar-user-avatar">{user.name?.charAt(0)}</div>
-            <div className="sidebar-user-info">
-              <div className="sidebar-user-name">{user.name}</div>
-              <div className="sidebar-user-role">{user.role}</div>
-            </div>
+        <div className="sidebar-user">
+          <div className="sidebar-avatar">
+            {user?.name?.charAt(0) || 'U'}
           </div>
-        )}
-        <div className="sidebar-item" onClick={logout} style={{ cursor: 'pointer', marginTop: 8 }}>
-          <LogOut size={18} />
-          {!collapsed && <span>Logout</span>}
+          <div className="sidebar-user-info">
+            <div className="sidebar-user-name">{user?.name || 'User'}</div>
+            <div className="sidebar-user-role">{user?.role || 'Role'}</div>
+          </div>
         </div>
       </div>
     </aside>
