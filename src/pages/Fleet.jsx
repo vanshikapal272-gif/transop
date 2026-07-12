@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import api from '../utils/api';
 import Table from '../components/ui/Table';
 import Modal from '../components/ui/Modal';
@@ -16,12 +17,21 @@ export default function Fleet() {
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState({ registration_number: '', name: '', type: 'Van', max_load_capacity: '', odometer: '', acquisition_cost: '', region: '' });
   const { addToast } = useToast();
+  const location = useLocation();
 
   const fetch = () => {
     setLoading(true);
     api.get('/api/vehicles').then(r => setVehicles(r.data.vehicles)).catch(() => addToast('Failed to load vehicles', 'error')).finally(() => setLoading(false));
   };
-  useEffect(fetch, []);
+  
+  useEffect(() => {
+    fetch();
+    if (location.state?.openModal === 'add') {
+      setForm({ registration_number: '', name: '', type: 'Van', max_load_capacity: '', odometer: '', acquisition_cost: '', region: '' });
+      setModal('add');
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

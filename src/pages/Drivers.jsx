@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import api from '../utils/api';
 import Table from '../components/ui/Table';
 import Modal from '../components/ui/Modal';
@@ -13,12 +14,21 @@ export default function Drivers() {
   const [form, setForm] = useState({ name: '', license_number: '', license_category: 'HMV', license_expiry: '', contact_number: '', safety_score: 80 });
   const [selected, setSelected] = useState(null);
   const { addToast } = useToast();
+  const location = useLocation();
 
   const fetch = () => {
     setLoading(true);
     api.get('/api/drivers').then(r => setDrivers(r.data.drivers)).catch(() => addToast('Failed to load drivers', 'error')).finally(() => setLoading(false));
   };
-  useEffect(fetch, []);
+  
+  useEffect(() => {
+    fetch();
+    if (location.state?.openModal === 'add') {
+      setForm({ name: '', license_number: '', license_category: 'HMV', license_expiry: '', contact_number: '', safety_score: 80 });
+      setModal('add');
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

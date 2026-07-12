@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import api from '../utils/api';
 import Table from '../components/ui/Table';
 import Modal from '../components/ui/Modal';
@@ -16,6 +17,7 @@ export default function Trips() {
   const [form, setForm] = useState({ source: '', destination: '', vehicle_id: '', driver_id: '', cargo_weight: '', planned_distance: '' });
   const [completeForm, setCompleteForm] = useState({ actual_distance: '', fuel_consumed: '' });
   const { addToast } = useToast();
+  const location = useLocation();
 
   const fetch = () => {
     setLoading(true);
@@ -29,7 +31,14 @@ export default function Trips() {
       setDrivers(d.data.drivers);
     }).catch(() => addToast('Failed to load', 'error')).finally(() => setLoading(false));
   };
-  useEffect(fetch, []);
+  useEffect(() => {
+    fetch();
+    if (location.state?.openModal === 'add') {
+      setForm({ source: '', destination: '', vehicle_id: '', driver_id: '', cargo_weight: '', planned_distance: '' });
+      setModal('add');
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleCreate = async (e) => {
     e.preventDefault();

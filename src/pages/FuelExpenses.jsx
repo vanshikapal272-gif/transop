@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import api from '../utils/api';
 import Table from '../components/ui/Table';
 import Modal from '../components/ui/Modal';
@@ -16,6 +17,7 @@ export default function FuelExpenses() {
   const [fuelForm, setFuelForm] = useState({ vehicle_id: '', liters: '', cost: '', date: '' });
   const [expenseForm, setExpenseForm] = useState({ vehicle_id: '', category: 'Toll', amount: '', date: '', description: '' });
   const { addToast } = useToast();
+  const location = useLocation();
 
   const fetch = () => {
     setLoading(true);
@@ -23,7 +25,15 @@ export default function FuelExpenses() {
       .then(([f, e, v]) => { setFuelLogs(f.data.fuel_logs); setExpenses(e.data.expenses); setVehicles(v.data.vehicles); })
       .catch(() => addToast('Failed to load', 'error')).finally(() => setLoading(false));
   };
-  useEffect(fetch, []);
+  
+  useEffect(() => {
+    fetch();
+    if (location.state?.openModal === 'add') {
+      setFuelForm({ vehicle_id: '', liters: '', cost: '', date: '' });
+      setModal('fuel');
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleFuelSubmit = async (e) => {
     e.preventDefault();

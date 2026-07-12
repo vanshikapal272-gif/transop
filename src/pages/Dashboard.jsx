@@ -162,75 +162,77 @@ export default function Dashboard() {
       </div>
 
       {/* Main Grid */}
-      <div className="dashboard-grid">
+      <div className="dashboard-grid" style={(!isFleetManager && !isDispatcher && !isFinancialAnalyst) ? { gridTemplateColumns: '1fr' } : {}}>
         {/* Left Column */}
-        <div className="flex-col gap-4" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Map (Fleet Manager & Dispatcher) */}
-          {(isFleetManager || isDispatcher) && (
-            <div className="card">
-              <div className="card-header">
-                <h3><MapPin size={16} style={{ display: 'inline', marginRight: 8, color: '#f59e0b' }} />Live Fleet Tracking</h3>
-                <span className="badge badge-success">{onTrip} on road</span>
-              </div>
-              <div style={{ height: '400px', borderRadius: '0 0 20px 20px', overflow: 'hidden' }}>
-                <MapContainer center={[22.5, 78.9]} zoom={5} style={{ height: '100%', width: '100%' }} scrollWheelZoom={true}>
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-                    url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-                  />
-                  {vehicleMarkers.map(v => (
-                    <Marker key={v.id} position={[v.lat, v.lng]} icon={createMarkerIcon(statusColors[v.status] || '#78716c')}>
-                      <Popup>
-                        <div style={{ fontFamily: 'Inter', minWidth: 160 }}>
-                          <strong style={{ fontSize: 14 }}>{v.name}</strong><br />
-                          <span style={{ fontSize: 12, color: '#78716c' }}>{v.registration_number}</span><br />
-                          <span style={{
-                            display: 'inline-block', marginTop: 4, padding: '2px 8px',
-                            borderRadius: 99, fontSize: 11, fontWeight: 600,
-                            background: statusColors[v.status] + '20', color: statusColors[v.status]
-                          }}>{v.status}</span><br />
-                          <span style={{ fontSize: 11, color: '#a8a29e' }}>{v.city} · {v.region}</span>
-                        </div>
-                      </Popup>
-                    </Marker>
-                  ))}
-                </MapContainer>
-              </div>
-            </div>
-          )}
-
-          {/* Recent Trips (Dispatcher & Financial Analyst) */}
-          {(isDispatcher || isFinancialAnalyst) && (
-            <div className="card">
-              <div className="card-header">
-                <h3>Recent Trips</h3>
-                <button className="btn btn-sm btn-secondary" onClick={() => navigate('/app/trips')}>View All</button>
-              </div>
-              <div className="data-table-wrapper" style={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
-                <table className="data-table">
-                  <thead>
-                    <tr><th>Route</th><th>Vehicle</th><th>Driver</th><th>Status</th><th>Date</th></tr>
-                  </thead>
-                  <tbody>
-                    {recentTrips.map(t => (
-                      <tr key={t.id}>
-                        <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{t.source} → {t.destination}</td>
-                        <td>{t.vehicle_reg || '—'}</td>
-                        <td>{t.driver_name || '—'}</td>
-                        <td>
-                          <span className={`badge badge-${t.status === 'Completed' ? 'success' : t.status === 'Dispatched' ? 'warning' : t.status === 'Cancelled' ? 'danger' : 'secondary'}`}>
-                            {t.status}
-                          </span>
-                        </td>
-                        <td className="text-xs text-muted">{new Date(t.created_at).toLocaleDateString('en-IN')}</td>
-                      </tr>
+        {(isFleetManager || isDispatcher || isFinancialAnalyst) && (
+          <div className="flex-col gap-4" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {/* Map (Fleet Manager & Dispatcher) */}
+            {(isFleetManager || isDispatcher) && (
+              <div className="card">
+                <div className="card-header">
+                  <h3><MapPin size={16} style={{ display: 'inline', marginRight: 8, color: '#f59e0b' }} />Live Fleet Tracking</h3>
+                  <span className="badge badge-success">{onTrip} on road</span>
+                </div>
+                <div style={{ height: '400px', borderRadius: '0 0 20px 20px', overflow: 'hidden' }}>
+                  <MapContainer center={[22.5, 78.9]} zoom={5} style={{ height: '100%', width: '100%' }} scrollWheelZoom={true}>
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+                      url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                    />
+                    {vehicleMarkers.map(v => (
+                      <Marker key={v.id} position={[v.lat, v.lng]} icon={createMarkerIcon(statusColors[v.status] || '#78716c')}>
+                        <Popup>
+                          <div style={{ fontFamily: 'Inter', minWidth: 160 }}>
+                            <strong style={{ fontSize: 14 }}>{v.name}</strong><br />
+                            <span style={{ fontSize: 12, color: '#78716c' }}>{v.registration_number}</span><br />
+                            <span style={{
+                              display: 'inline-block', marginTop: 4, padding: '2px 8px',
+                              borderRadius: 99, fontSize: 11, fontWeight: 600,
+                              background: statusColors[v.status] + '20', color: statusColors[v.status]
+                            }}>{v.status}</span><br />
+                            <span style={{ fontSize: 11, color: '#a8a29e' }}>{v.city} · {v.region}</span>
+                          </div>
+                        </Popup>
+                      </Marker>
                     ))}
-                  </tbody>
-                </table>
+                  </MapContainer>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+
+            {/* Recent Trips (Dispatcher & Financial Analyst) */}
+            {(isDispatcher || isFinancialAnalyst) && (
+              <div className="card">
+                <div className="card-header">
+                  <h3>Recent Trips</h3>
+                  <button className="btn btn-sm btn-secondary" onClick={() => navigate('/app/trips')}>View All</button>
+                </div>
+                <div className="data-table-wrapper" style={{ border: 'none', borderRadius: 0, boxShadow: 'none' }}>
+                  <table className="data-table">
+                    <thead>
+                      <tr><th>Route</th><th>Vehicle</th><th>Driver</th><th>Status</th><th>Date</th></tr>
+                    </thead>
+                    <tbody>
+                      {recentTrips.map(t => (
+                        <tr key={t.id}>
+                          <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{t.source} → {t.destination}</td>
+                          <td>{t.vehicle_reg || '—'}</td>
+                          <td>{t.driver_name || '—'}</td>
+                          <td>
+                            <span className={`badge badge-${t.status === 'Completed' ? 'success' : t.status === 'Dispatched' ? 'warning' : t.status === 'Cancelled' ? 'danger' : 'secondary'}`}>
+                              {t.status}
+                            </span>
+                          </td>
+                          <td className="text-xs text-muted">{new Date(t.created_at).toLocaleDateString('en-IN')}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Right Column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -273,24 +275,29 @@ export default function Dashboard() {
             <div className="card-body">
               <div className="quick-actions">
                 {(isDispatcher || isFleetManager) && (
-                  <button className="quick-action-btn" onClick={() => navigate('/app/trips')}>
+                  <button className="quick-action-btn" onClick={() => navigate('/app/trips', { state: { openModal: 'add' } })}>
                     <Plus size={18} /><span>New Trip</span>
                   </button>
                 )}
                 {isFleetManager && (
-                  <button className="quick-action-btn" onClick={() => navigate('/app/fleet')}>
+                  <button className="quick-action-btn" onClick={() => navigate('/app/fleet', { state: { openModal: 'add' } })}>
                     <Truck size={18} /><span>Add Vehicle</span>
                   </button>
                 )}
                 {(isSafetyOfficer || isFleetManager) && (
-                  <button className="quick-action-btn" onClick={() => navigate('/app/drivers')}>
+                  <button className="quick-action-btn" onClick={() => navigate('/app/drivers', { state: { openModal: 'add' } })}>
                     <Users size={18} /><span>Add Driver</span>
                   </button>
                 )}
                 {isFinancialAnalyst && (
-                  <button className="quick-action-btn" onClick={() => navigate('/app/analytics')}>
-                    <BarChart3 size={18} /><span>Analytics</span>
-                  </button>
+                  <>
+                    <button className="quick-action-btn" onClick={() => navigate('/app/fuel-expenses', { state: { openModal: 'add' } })}>
+                      <Plus size={18} /><span>Add Logs</span>
+                    </button>
+                    <button className="quick-action-btn" onClick={() => navigate('/app/analytics')}>
+                      <BarChart3 size={18} /><span>Analytics</span>
+                    </button>
+                  </>
                 )}
               </div>
             </div>
