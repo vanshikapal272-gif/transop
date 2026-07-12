@@ -1048,7 +1048,84 @@ textarea.form-input { min-height: 80px; resize: vertical; }
   margin-top: var(--sp-6);
   padding-top: var(--sp-4);
   border-top: 1px solid var(--bg-tertiary);
-}@keyframes shimmer {
+}/* Analytics & Charts */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-6);
+  margin-top: var(--sp-6);
+}
+@media (min-width: 1024px) {
+  .charts-grid { grid-template-columns: 1fr 1fr; }
+}
+.chart-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--bg-tertiary);
+  border-radius: var(--radius-xl);
+  padding: var(--sp-6);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+.chart-card-wide {
+  grid-column: 1 / -1;
+}
+.chart-title {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-6);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  justify-content: center;
+  margin-top: var(--sp-6);
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.roi-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--bg-tertiary);
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+}
+.roi-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.roi-table th {
+  background: var(--bg-tertiary);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--bg-tertiary);
+}
+.roi-table td {
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--bg-tertiary);
+  font-size: var(--fs-sm);
+}
+.roi-table tbody tr:last-child td { border-bottom: none; }
+.roi-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+@keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
