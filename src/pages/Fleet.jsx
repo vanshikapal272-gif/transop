@@ -29,7 +29,6 @@ export default function Fleet() {
     if (location.state?.openModal === 'add') {
       setForm({ registration_number: '', name: '', type: 'Van', max_load_capacity: '', odometer: '', acquisition_cost: '', region: '' });
       setModal('add');
-      window.history.replaceState({}, document.title);
     }
   }, [location.state]);
 

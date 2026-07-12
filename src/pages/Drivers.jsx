@@ -26,7 +26,6 @@ export default function Drivers() {
     if (location.state?.openModal === 'add') {
       setForm({ name: '', license_number: '', license_category: 'HMV', license_expiry: '', contact_number: '', safety_score: 80 });
       setModal('add');
-      window.history.replaceState({}, document.title);
     }
   }, [location.state]);
 

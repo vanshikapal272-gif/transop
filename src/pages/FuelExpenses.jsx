@@ -31,7 +31,6 @@ export default function FuelExpenses() {
     if (location.state?.openModal === 'add') {
       setFuelForm({ vehicle_id: '', liters: '', cost: '', date: '' });
       setModal('fuel');
-      window.history.replaceState({}, document.title);
     }
   }, [location.state]);
 

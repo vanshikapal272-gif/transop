@@ -36,7 +36,6 @@ export default function Trips() {
     if (location.state?.openModal === 'add') {
       setForm({ source: '', destination: '', vehicle_id: '', driver_id: '', cargo_weight: '', planned_distance: '' });
       setModal('add');
-      window.history.replaceState({}, document.title);
     }
   }, [location.state]);
 
